@@ -75,7 +75,8 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (rootNode == null) {
-            System.out.println("db.json not found in classpath or filesystem, skipping initial seeding.");
+            System.out.println("db.json not found in classpath or filesystem, seeding essential demo accounts.");
+            seedDefaultAccounts();
             return;
         }
 
@@ -218,5 +219,63 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         System.out.println("Seeding completed successfully!");
+    }
+
+    private void seedDefaultAccounts() {
+        // Job Seeker Demo
+        User seeker = new User();
+        seeker.setId("user-seeker-1");
+        seeker.setName("Alice Smith");
+        seeker.setEmail("alice@example.com");
+        seeker.setPassword("pass123");
+        seeker.setRole("seeker");
+        userRepository.save(seeker);
+
+        // Gobi Account
+        User gobi = new User();
+        gobi.setId("user-gobi-04");
+        gobi.setName("Gobi");
+        gobi.setEmail("gobi@gmail.com");
+        gobi.setPassword("123456");
+        gobi.setRole("seeker");
+        userRepository.save(gobi);
+
+        // Employer Demo
+        User employer = new User();
+        employer.setId("user-emp-1");
+        employer.setName("Bob Recruiter");
+        employer.setEmail("bob@techcorp.com");
+        employer.setPassword("pass123");
+        employer.setRole("employer");
+        employer.setCompany("{\"name\":\"TechCorp Inc.\",\"industry\":\"Technology\",\"location\":\"Remote\"}");
+        userRepository.save(employer);
+
+        // Admin Demo
+        User admin = new User();
+        admin.setId("user-admin-1");
+        admin.setName("Portal Admin");
+        admin.setEmail("admin@jobportal.com");
+        admin.setPassword("admin123");
+        admin.setRole("admin");
+        userRepository.save(admin);
+
+        // Default Sample Job
+        Job job1 = new Job();
+        job1.setId("job-demo-1");
+        job1.setEmployerId("user-emp-1");
+        job1.setCompanyName("TechCorp Inc.");
+        job1.setTitle("Full Stack Developer");
+        job1.setDescription("Looking for an energetic Full Stack Developer skilled in React and Spring Boot for fast-track product delivery.");
+        job1.setLocation("Remote");
+        job1.setJobType("Full-Time");
+        job1.setIndustry("Technology");
+        job1.setExperienceLevel("Fresher to 2 Years");
+        job1.setSalaryRange("₹5 - 8 LPA");
+        job1.setRequiredSkills("[\"React\", \"Spring Boot\", \"MySQL\", \"Tailwind CSS\"]");
+        job1.setStatus("approved");
+        job1.setPostedAt(java.time.LocalDate.now().toString());
+        jobRepository.save(job1);
+
+        System.out.println("Successfully seeded essential demo users & sample jobs into MySQL!");
     }
 }

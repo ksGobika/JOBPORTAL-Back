@@ -20,7 +20,11 @@ public class UserController {
     @GetMapping
     public List<User> getUsers(@RequestParam(required = false) String email, @RequestParam(required = false) String role) {
         if (email != null && !email.trim().isEmpty()) {
-            Optional<User> userOpt = userRepository.findByEmail(email);
+            String cleanEmail = email.trim();
+            Optional<User> userOpt = userRepository.findByEmail(cleanEmail);
+            if (!userOpt.isPresent()) {
+                userOpt = userRepository.findByEmail(cleanEmail.toLowerCase());
+            }
             return userOpt.map(Collections::singletonList).orElse(Collections.emptyList());
         }
         if (role != null && !role.trim().isEmpty()) {
