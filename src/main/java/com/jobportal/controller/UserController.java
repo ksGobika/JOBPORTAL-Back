@@ -41,13 +41,25 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody Map<String, Object> userData) {
+    public ResponseEntity<?> createUser(@RequestBody Map<String, Object> userData) {
+        String email = userData.containsKey("email") && userData.get("email") != null ? userData.get("email").toString().trim().toLowerCase() : "";
+        if (email.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email address is required."));
+        }
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            return ResponseEntity.status(409).body(Map.of("message", "An account with this email address already exists."));
+        }
+
         User user = new User();
         user.setId(userData.containsKey("id") && userData.get("id") != null ? userData.get("id").toString() : UUID.randomUUID().toString());
         user.setName(userData.containsKey("name") && userData.get("name") != null ? userData.get("name").toString() : "");
-        user.setEmail(userData.containsKey("email") && userData.get("email") != null ? userData.get("email").toString() : "");
+        user.setEmail(email);
         user.setPassword(userData.containsKey("password") && userData.get("password") != null ? userData.get("password").toString() : "");
         user.setRole(userData.containsKey("role") && userData.get("role") != null ? userData.get("role").toString() : "seeker");
+        if (userData.containsKey("phone") && userData.get("phone") != null) {
+            user.setPhone(userData.get("phone").toString());
+        }
 
         if (userData.containsKey("profile") && userData.get("profile") != null) {
             user.setProfile(toJsonString(userData.get("profile")));
@@ -59,7 +71,8 @@ public class UserController {
             user.setSavedJobs(toJsonString(userData.get("savedJobs")));
         }
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        return ResponseEntity.ok(saved);
     }
 
     @RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})

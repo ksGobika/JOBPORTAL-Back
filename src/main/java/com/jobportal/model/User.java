@@ -29,11 +29,21 @@ public class User {
     @Column(columnDefinition = "LONGTEXT")
     private String company;
 
+    private String phone;
+
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String savedJobs;
 
     public User() {}
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public User(String id, String name, String email, String password, String role, String profile, String company, String savedJobs) {
         this.id = id;
